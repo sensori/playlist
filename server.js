@@ -9,6 +9,7 @@ app.engine('.hbs', exphbs({
   extname: '.hbs',
   layoutsDir: path.join(__dirname, 'views/layouts')
 }))
+
 app.set('view engine', '.hbs')  
 app.set('views', path.join(__dirname, 'views'))  
 app.set('port', (process.env.PORT || 3000));
@@ -31,6 +32,7 @@ fb = new FB.Facebook({
  
 //     var accessToken = res.access_token;
 // });
+app.use(allowCrossDomain)
 app.get('/', (request, response) => {
   // response.send('home')
     // FB.api('/me', {access_token : accessToken}, function(res)  {

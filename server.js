@@ -3,6 +3,8 @@ const app = express()
 const path = require('path')  
 const exphbs = require('express-handlebars')
 var https = require('https');
+var cors = require('cors'); 
+app.use(cors());
 var accessToken = "EAAGarDuZA1w0BAJPhKXHb2hA949AkKHjkQRRbQC9Ln7rrBMeMBQ9oSlL6qMTahp3pAZClM0XIZB3rulYXcWs7H7pMy1ftF06CvYtIymKZC4ZCZBpU9QwxZCZBQ6tFy3cewFaCJL1BdfJvfd77o62AgcJHL43RjYvMXTkogSEYaELtG1vADlIWL2X"
 app.engine('.hbs', exphbs({  
   defaultLayout: 'main',
@@ -32,7 +34,6 @@ fb = new FB.Facebook({
  
 //     var accessToken = res.access_token;
 // });
-app.use(allowCrossDomain)
 app.get('/', (request, response) => {
   // response.send('home')
     // FB.api('/me', {access_token : accessToken}, function(res)  {
@@ -41,7 +42,7 @@ app.get('/', (request, response) => {
     FB.api('/1828449210706834','GET',{"fields":"feed", access_token:accessToken},
       function(res) {
           console.log('Successful login for: ' + res.feed.data);
-          response.json(res.feed.data)
+          response.json(res.feed.data);
       }
     );
 })
@@ -53,7 +54,7 @@ app.get('/longAccessToken', (request, response) => {
   //   chance: Math.random()
   // })
   // response.render('home', {})
-  theUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=451539501700877&client_secret=6876aa6703814e84894e945f46f317b5&fb_exchange_token=EAAGarDuZA1w0BAJPhKXHb2hA949AkKHjkQRRbQC9Ln7rrBMeMBQ9oSlL6qMTahp3pAZClM0XIZB3rulYXcWs7H7pMy1ftF06CvYtIymKZC4ZCZBpU9QwxZCZBQ6tFy3cewFaCJL1BdfJvfd77o62AgcJHL43RjYvMXTkogSEYaELtG1vADlIWL2X"
+  theUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=451539501700877&client_secret=6876aa6703814e84894e945f46f317b5&fb_exchange_token=EAAGarDuZA1w0BAJPhKXHb2hA949AkKHjkQRRbQC9Ln7rrBMeMBQ9oSlL6qMTahp3pAZClM0XIZB3rulYXcWs7H7pMy1ftF06CvYtIymKZC4ZCZBpU9QwxZCZBQ6tFy3cewFaCJL1BdfJvfd77o62AgcJHL43RjYvMXTkogSEYaELtG1vADlIWL2X";
   // httpGetAsync(theUrl, getLongLivedCallback)
 
   //var request = https.get(theUrl, getLongLivedCallback)
@@ -61,12 +62,12 @@ app.get('/longAccessToken', (request, response) => {
 
 app.use((err, request, response, next) => {  
   // log the error, for now just console.log
-  console.log(err)
-  response.status(500).send('Something broke!')
+  console.log(err);
+  response.status(500).send('Something broke!');
 })
 
 app.listen(app.get('port'), function () {
-  console.log('Example app listening on port', app.get('port'))
+  console.log('Example app listening on port', app.get('port'));
 }) 
 
 function httpGetAsync(theUrl, callback)

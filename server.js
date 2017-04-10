@@ -5,6 +5,7 @@ const exphbs = require('express-handlebars')
 var https = require('https');
 var cors = require('cors'); 
 app.use(cors());
+var disciplesId = "509631155753788"
 var accessToken = "EAAGarDuZA1w0BAJPhKXHb2hA949AkKHjkQRRbQC9Ln7rrBMeMBQ9oSlL6qMTahp3pAZClM0XIZB3rulYXcWs7H7pMy1ftF06CvYtIymKZC4ZCZBpU9QwxZCZBQ6tFy3cewFaCJL1BdfJvfd77o62AgcJHL43RjYvMXTkogSEYaELtG1vADlIWL2X"
 app.engine('.hbs', exphbs({  
   defaultLayout: 'main',
@@ -38,26 +39,33 @@ app.get('/', (request, response) => {
   // response.send('home')
     // FB.api('/me', {access_token : accessToken}, function(res)  {
     //   console.log('Successful login for: ' + res.name);
-    // });
-    FB.api('/1828449210706834','GET',{"fields":"feed", access_token:accessToken},
+    // });        
+    // parse request for params
+    var since = request.query.since;
+    var until = request.query.until;
+    var limit = request.query.limit;
+
+    // build feed parameter
+    // if (since != null){
+
+    // }
+    var feedParams = "feed" + ".since(" + since + ").until(" + until + "){link,message}"
+    FB.api('/'+ disciplesId,'GET',
+      {"fields":feedParams, 
+        access_token:accessToken,
+        "since": since,
+        "until": until,
+        "limit": limit     
+      },
       function(res) {
-          console.log('Successful login for: ' + res.feed.data);
+          // console.log('Successful login for: ' + res.feed.data);
           response.json(res.feed.data);
       }
     );
 })
 
 app.get('/longAccessToken', (request, response) => {
-    // Login()
-  // response.json({
-  //   // chance: request.chance
-  //   chance: Math.random()
-  // })
-  // response.render('home', {})
   theUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=451539501700877&client_secret=6876aa6703814e84894e945f46f317b5&fb_exchange_token=EAAGarDuZA1w0BAJPhKXHb2hA949AkKHjkQRRbQC9Ln7rrBMeMBQ9oSlL6qMTahp3pAZClM0XIZB3rulYXcWs7H7pMy1ftF06CvYtIymKZC4ZCZBpU9QwxZCZBQ6tFy3cewFaCJL1BdfJvfd77o62AgcJHL43RjYvMXTkogSEYaELtG1vADlIWL2X";
-  // httpGetAsync(theUrl, getLongLivedCallback)
-
-  //var request = https.get(theUrl, getLongLivedCallback)
 })
 
 app.use((err, request, response, next) => {  

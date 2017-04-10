@@ -1,6 +1,5 @@
 const express = require('express')  
 const app = express()  
-const port = 3000
 const path = require('path')  
 const exphbs = require('express-handlebars')
 var https = require('https');
@@ -12,7 +11,7 @@ app.engine('.hbs', exphbs({
 }))
 app.set('view engine', '.hbs')  
 app.set('views', path.join(__dirname, 'views'))  
-
+app.set('port', (process.env.PORT || 3000));
 // app.use((request, response, next) => {  
 //   console.log(request.headers)
 //   next()
@@ -64,8 +63,8 @@ app.use((err, request, response, next) => {
   response.status(500).send('Something broke!')
 })
 
-app.listen(port, function () {
-  console.log('Example app listening on port 3000!')
+app.listen(app.get('port'), function () {
+  console.log('Example app listening on port', app.get('port'))
 }) 
 
 function httpGetAsync(theUrl, callback)

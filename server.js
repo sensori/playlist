@@ -6,7 +6,8 @@ var https = require('https');
 var cors = require('cors'); 
 app.use(cors());
 var disciplesId = "509631155753788"
-var accessToken = "EAAGarDuZA1w0BAJPhKXHb2hA949AkKHjkQRRbQC9Ln7rrBMeMBQ9oSlL6qMTahp3pAZClM0XIZB3rulYXcWs7H7pMy1ftF06CvYtIymKZC4ZCZBpU9QwxZCZBQ6tFy3cewFaCJL1BdfJvfd77o62AgcJHL43RjYvMXTkogSEYaELtG1vADlIWL2X"
+var fbExchangeToken = "EAAGarDuZA1w0BADwYQDqao5ZAUReW7qZBxFBkBmtI76oMSwCitHnZBHJ1bSmoAPTMSrRXZCO3Ng5Nfd8hhBNP8bjIkKZAvqEeMLwBdeuCYGtPAeWrUXPnrhKb2okfeUYDI2vhZA5yl0HP2oyNEcIYXhj379bLPI4z5V9HQobhmKylgVU57wTn7n8ou0IVQGmyIZD"
+var accessToken = "EAAGarDuZA1w0BAJju7hRGYjJkDZCktAoQeXSHZApnZBNThOZBhjDZAElAFdAJ9RiLlM5j0WoTqbJwYebKIzTBNWoJGyHvAdC1lI6DrWBswPL4Kv4zqI3lpXvpJcdOWjLQpZAjbtLvl5sEcMF2B2WLwf"
 app.engine('.hbs', exphbs({  
   defaultLayout: 'main',
   extname: '.hbs',
@@ -35,37 +36,61 @@ fb = new FB.Facebook({
  
 //     var accessToken = res.access_token;
 // });
+app.get('/facebookLogin', (request, response) => {
+  response.render('home');
+})
+
+app.get('/checkFacebookLogin', (request, response) => {  
+    FB.api('/me', {access_token : accessToken}, function(res)  {
+      console.log('Successful login for: ' + res.name);
+      response.send('succesful login');
+    });        
+})
+
 app.get('/', (request, response) => {
-  // response.send('home')
-    // FB.api('/me', {access_token : accessToken}, function(res)  {
-    //   console.log('Successful login for: ' + res.name);
-    // });        
-    // parse request for params
-    var since = request.query.since;
-    var until = request.query.until;
-    var limit = request.query.limit;
+  response.send('home')       
+})
 
+app.get('/getPosts', (request, response) => {
+    // defaults
+    var since = new Date();
+    since.setFullYear(2016);
+    since = since.toISOString();
+    var until = new Date().toISOString();
+
+    // parse request for params    
+    if (request.query.since != null){
+      since = request.query.since;
+    }
+    if (request.query.until != null){
+      until = request.query.until;
+    }
     // build feed parameter
-    // if (since != null){
-
-    // }
     var feedParams = "feed" + ".since(" + since + ").until(" + until + "){link,message}"
     FB.api('/'+ disciplesId,'GET',
-      {"fields":feedParams, 
-        access_token:accessToken,
-        "since": since,
-        "until": until,
-        "limit": limit     
+      {
+        "fields":feedParams, 
+        access_token:accessToken    
       },
       function(res) {
-          // console.log('Successful login for: ' + res.feed.data);
-          response.json(res.feed.data);
+        // TODO handle errors here
+          //console.log('Successful login for: ' + res.feed.data);
+          // if (res.error != null && res.error.message) {
+          //   return response.status(500).send(err.error);
+          // }          
+          if (res != null && res.feed != null && res.feed.data != null){
+            response.json(res.feed.data);
+          }
+          else {
+            response.json('');
+          }
       }
     );
 })
 
 app.get('/longAccessToken', (request, response) => {
-  theUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=451539501700877&client_secret=6876aa6703814e84894e945f46f317b5&fb_exchange_token=EAAGarDuZA1w0BAJPhKXHb2hA949AkKHjkQRRbQC9Ln7rrBMeMBQ9oSlL6qMTahp3pAZClM0XIZB3rulYXcWs7H7pMy1ftF06CvYtIymKZC4ZCZBpU9QwxZCZBQ6tFy3cewFaCJL1BdfJvfd77o62AgcJHL43RjYvMXTkogSEYaELtG1vADlIWL2X";
+  theUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=451539501700877&client_secret=6876aa6703814e84894e945f46f317b5&fb_exchange_token=" + fbExchangeToken;  
+  var request = https.get(theUrl, getLongLivedCallback)
 })
 
 app.use((err, request, response, next) => {  
@@ -77,17 +102,6 @@ app.use((err, request, response, next) => {
 app.listen(app.get('port'), function () {
   console.log('Example app listening on port', app.get('port'));
 }) 
-
-function httpGetAsync(theUrl, callback)
-{  
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
-    }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-    xmlHttp.send(null);
-}
 
 function getLongLivedCallback(res){
    console.log('STATUS: ' + res.statusCode);
@@ -102,7 +116,7 @@ function getLongLivedCallback(res){
     var body = Buffer.concat(bodyChunks);
     console.log('BODY: ' + body);
     // ...and/or process the entire body here.
-    console.log('Long-lived token: ' + JSON.parse(body).access_token);
+    console.log('Long-lived token: ' + JSON.parse(body).access_token);    
   })
   // console.log('Long-lived token: ' + response);
 }

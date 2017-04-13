@@ -65,8 +65,9 @@ app.get('/getPosts', (request, response) => {
     if (request.query.until != null){
       until = request.query.until;
     }
+    
     // build feed parameter
-    var feedParams = "feed" + ".since(" + since + ").until(" + until + "){link,message}"
+    var feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(50){link,message}"
     FB.api('/'+ disciplesId,'GET',
       {
         "fields":feedParams, 

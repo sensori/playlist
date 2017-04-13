@@ -67,7 +67,7 @@ app.get('/getPosts', (request, response) => {
     }
     
     // build feed parameter
-    var feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(50){link,message}"
+    var feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(100){link,message}"
     FB.api('/'+ disciplesId,'GET',
       {
         "fields":feedParams, 

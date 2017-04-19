@@ -51,7 +51,16 @@ app.get('/', (request, response) => {
   response.send('home')       
 })
 
-app.get('/getPosts', (request, response) => {
+app.get('/getMembers'
+, (request, response) => {
+
+    // build feed parameter
+    var feedParams = "members.limit(1000){name,id}";
+    callFacebookApi(response, feedParams);
+})
+
+app.get('/getPosts'
+, (request, response) => {
     // defaults
     var since = new Date();
     since.setFullYear(2016);
@@ -68,9 +77,13 @@ app.get('/getPosts', (request, response) => {
     
     // build feed parameter
     var feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(100){link,message}"
-    FB.api('/'+ disciplesId,'GET',
+    callFacebookApi(response, feedParams);
+})
+
+function callFacebookApi(response, params){
+      FB.api('/'+ disciplesId,'GET',
       {
-        "fields":feedParams, 
+        "fields":params, 
         access_token:accessToken    
       },
       function(res) {
@@ -82,12 +95,15 @@ app.get('/getPosts', (request, response) => {
           if (res != null && res.feed != null && res.feed.data != null){
             response.json(res.feed.data);
           }
+          else if (res!= null && res.members != null && res.members.data != null){
+            response.json(res.members.data);
+          }
           else {
             response.json('');
           }
       }
     );
-})
+}
 
 app.get('/longAccessToken', (request, response) => {
   theUrl = "https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=451539501700877&client_secret=6876aa6703814e84894e945f46f317b5&fb_exchange_token=" + fbExchangeToken;  

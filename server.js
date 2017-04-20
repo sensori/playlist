@@ -66,6 +66,8 @@ app.get('/getPosts'
     since.setFullYear(2016);
     since = since.toISOString();
     var until = new Date().toISOString();
+    var member = false;
+    var limit = "100";
 
     // parse request for params    
     if (request.query.since != null){
@@ -74,9 +76,15 @@ app.get('/getPosts'
     if (request.query.until != null){
       until = request.query.until;
     }
+    // for now we always ask for member(from) and message data, 
+    // at some point when all this is in database we can change that
+    if (request.query.member != null){ // TODO - take member ID
+      member = true;
+      limit = "1000"; // more posts if filtering by specific user
+    }
     
     // build feed parameter
-    var feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(100){link,message}"
+    var feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(" + limit + "){link,message,from}"
     callFacebookApi(response, feedParams);
 })
 

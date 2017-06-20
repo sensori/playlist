@@ -68,7 +68,7 @@ app.get('/getPosts', (request, response) => {
     since = since.toISOString();
     var until = new Date().toISOString();
     var member = false;
-    var limit = "500";
+    var limit = "1000";
     var pageToken = "";
 
     if (request.query.nextpage != null) {

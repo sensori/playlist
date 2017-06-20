@@ -6,8 +6,8 @@ var https = require('https');
 var cors = require('cors'); 
 app.use(cors());
 var disciplesId = "509631155753788"
-var fbExchangeToken = "EAAGarDuZA1w0BADwYQDqao5ZAUReW7qZBxFBkBmtI76oMSwCitHnZBHJ1bSmoAPTMSrRXZCO3Ng5Nfd8hhBNP8bjIkKZAvqEeMLwBdeuCYGtPAeWrUXPnrhKb2okfeUYDI2vhZA5yl0HP2oyNEcIYXhj379bLPI4z5V9HQobhmKylgVU57wTn7n8ou0IVQGmyIZD"
-var accessToken = "EAAGarDuZA1w0BAJju7hRGYjJkDZCktAoQeXSHZApnZBNThOZBhjDZAElAFdAJ9RiLlM5j0WoTqbJwYebKIzTBNWoJGyHvAdC1lI6DrWBswPL4Kv4zqI3lpXvpJcdOWjLQpZAjbtLvl5sEcMF2B2WLwf"
+var fbExchangeToken = "EAAGarDuZA1w0BAHsYmGUOaJz2O0xZBmhZA0WEV1EZA1kRwsx1ZBcZCSA6Oq4fRYLp57zMiZCqwXnECtg1NZCIXkvtUOm3LqqBNXrZBU8AWBEZAVZBTA0n12gmBAohJNh2HzX5fPXMcFyMrlqqVYIIXG2b05pnpzVySfrveJm4oUWQfCkqZBbJeFqS3hglZCWvrOuMvs8ZD"
+var accessToken = "EAAGarDuZA1w0BALbgdXbzclNyUeK7RaO7ZCEAXgY1ngYMougRFzdpOHs3VDxEJ46Q4QblHcvjcBm7dhnaCyIMgN76vehywZAjEAE0ptnTP89qFK7vU7B8m7VNlSwSQZAZC4VFRmoaMTZC1UZBTY9aZCC4ZC6V6W277cbxM3yhgzFTwgZDZD"
 app.engine('.hbs', exphbs({  
   defaultLayout: 'main',
   extname: '.hbs',
@@ -59,49 +59,77 @@ app.get('/getMembers'
     callFacebookApi(response, feedParams);
 })
 
-app.get('/getPosts'
-, (request, response) => {
+app.get('/getPosts', (request, response) => {
+    // build feed parameter
+    var feedParams = "";          
     // defaults
     var since = new Date();
     since.setFullYear(2016);
     since = since.toISOString();
     var until = new Date().toISOString();
     var member = false;
-    var limit = "100";
+    var limit = "500";
+    var pageToken = "";
 
-    // parse request for params    
-    if (request.query.since != null){
-      since = request.query.since;
-    }
-    if (request.query.until != null){
+    if (request.query.nextpage != null) {
+      // this is the exact graph API request we want to use, as returned (presumably)
+      // earlier from facebook            
+      // we should have since, until, and a page token;
+      // TODO - funky parsing going on probably due to sending a full URL as a params
+
+      // parse the nextpage param as a URL to get its params
+      var url = require('url');
+      var url_parts = url.parse(request.query.nextpage, true);
+      since = url_parts.query.since;
+
+      // these two are parsed already by node
       until = request.query.until;
+      pageToken = request.query.__paging_token;
     }
-    // for now we always ask for member(from) and message data, 
-    // at some point when all this is in database we can change that
-    if (request.query.member != null){ // TODO - take member ID
-      member = true;
-      limit = "1000"; // more posts if filtering by specific user
-    }
-    
-    // build feed parameter
-    var feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(" + limit + "){link,message,from}"
-    callFacebookApi(response, feedParams);
-})
+    else {
+      // parse request for params    
+      if (request.query.since != null){
+        since = request.query.since;
+      }
+      if (request.query.until != null){
+        until = request.query.until;
+      }
+      // for now we always ask for member(from) and message data, 
+      // at some point when all this is in database we can change that
+      if (request.query.member != null){ // TODO - take member ID?? can we specify this in facebook graphi api call?
+        member = true;        
+      }      
+    }  
+    feedParams = "feed" + ".since(" + since + ").until(" + until + ").limit(" + limit + "){link,message,from}"     
+    callFacebookApi(response, feedParams, pageToken);
+  })
 
-function callFacebookApi(response, params){
-      FB.api('/'+ disciplesId,'GET',
-      {
-        "fields":params, 
-        access_token:accessToken    
-      },
-      function(res) {
-        // TODO handle errors here
+function callFacebookApi(response, params, pageToken){
+      var fbParams = {};
+      if (pageToken != null){
+        fbParams = 
+        {
+          "fields":params, 
+          access_token:accessToken,
+          __paging_token:pageToken   
+        };
+      }
+      else{
+        fbParams = 
+        {
+          "fields":params, 
+          access_token:accessToken    
+        };
+       }      
+      FB.api('/'+ disciplesId,'GET', fbParams,
+        function(res) {
+          // TODO handle errors here
           //console.log('Successful login for: ' + res.feed.data);
           // if (res.error != null && res.error.message) {
           //   return response.status(500).send(err.error);
           // }          
           if (res != null && res.feed != null && res.feed.data != null){
-            response.json(res.feed.data);
+            response.json(res.feed);
           }
           else if (res!= null && res.members != null && res.members.data != null){
             response.json(res.members.data);
@@ -109,7 +137,7 @@ function callFacebookApi(response, params){
           else {
             response.json('');
           }
-      }
+        }
     );
 }
 

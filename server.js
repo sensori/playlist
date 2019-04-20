@@ -6,7 +6,7 @@ var https = require('https');
 var cors = require('cors'); 
 app.use(cors());
 var disciplesId = "509631155753788"
-var fbExchangeToken = "EAAGarDuZA1w0BAHsYmGUOaJz2O0xZBmhZA0WEV1EZA1kRwsx1ZBcZCSA6Oq4fRYLp57zMiZCqwXnECtg1NZCIXkvtUOm3LqqBNXrZBU8AWBEZAVZBTA0n12gmBAohJNh2HzX5fPXMcFyMrlqqVYIIXG2b05pnpzVySfrveJm4oUWQfCkqZBbJeFqS3hglZCWvrOuMvs8ZD"
+var fbExchangeToken = "EAAGarDuZA1w0BAGskH1piyVWD2LkJuyyOaONLhrbgfybvOT0gA6VBfK6Am8tOCy3kpWDQ4dLttny1i8NlNGRiVm8nMcZAacG3Rmrhzq7N9STmZCaY2BZBchZBQinJIWBYp5rKgr5tpYdTV29T4DMd6wIVJhuJHfh5PiZBG3xxJp3uygowypFZAKkHuRE4lqiTFynwe8HjaLfgZDZD"
 var accessToken = "EAAGarDuZA1w0BAFxw5s1DDTzZBMEcD8efiDC66CKOK4MsP3S7K1ZBo8mEiQHZCZCKeCh0Y9LcevmZAJzj2nqyPC5XYujWEzCyZApOZCmVWRc19YLZBd7hDIHrdaGE2KB7C5OSo98UvVWoODKd7Fx4pE4qkTfTot3fuq9ZB3ymqDdCEaAZDZD"
 app.engine('.hbs', exphbs({  
   defaultLayout: 'main',

@@ -51,13 +51,14 @@ app.get('/', (request, response) => {
   response.send('home')       
 })
 
-app.get('/getMembers'
-, (request, response) => {
+// members edge was deprecated
+// app.get('/getMembers'
+// , (request, response) => {
 
-    // build feed parameter
-    var feedParams = "members.limit(1000){name,id}";
-    callFacebookApi(response, feedParams);
-})
+//     // build feed parameter
+//     var feedParams = "members.limit(1000){name,id}";
+//     callFacebookApi(response, feedParams);
+// })
 
 app.get('/getPosts', (request, response) => {
     // build feed parameter

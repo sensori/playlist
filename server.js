@@ -124,10 +124,10 @@ function callFacebookApi(response, params, pageToken){
       FB.api('/'+ disciplesId,'GET', fbParams,
         function(res) {
           // TODO handle errors here
-          //console.log('Successful login for: ' + res.feed.data);
-          // if (res.error != null && res.error.message) {
-          //   return response.status(500).send(err.error);
-          // }          
+          // console.log('Successful login for: ' + res.feed.data);
+          if (res.error != null && res.error.message) {
+            return response.json(res);
+          }          
           if (res != null && res.feed != null && res.feed.data != null){
             response.json(res.feed);
           }

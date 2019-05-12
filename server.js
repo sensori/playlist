@@ -29,7 +29,7 @@ app.set('port', (process.env.PORT || 3000));
 
 var FB = require('fb'),
 fb = new FB.Facebook({
-                      version: 'v2.8', 
+                      version: 'v3.3', 
                       appId: '451539501700877',                       
                       xfbml: true  
                     });

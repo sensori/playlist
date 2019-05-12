@@ -126,6 +126,7 @@ function callFacebookApi(response, params, pageToken){
           // TODO handle errors here
           // console.log('Successful login for: ' + res.feed.data);
           if (res.error != null && res.error.message) {
+            console.log(res.error.message);
             return response.json(res);
           }          
           if (res != null && res.feed != null && res.feed.data != null){
